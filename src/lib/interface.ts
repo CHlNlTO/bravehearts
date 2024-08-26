@@ -4,3 +4,7 @@ export interface BraveCardInterface {
   handle: string;
   brave: string;
 }
+
+export interface AddBraveFormProps {
+  onSuccess: () => void; // New prop to trigger data refetch
+}
