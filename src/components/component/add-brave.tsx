@@ -1,10 +1,12 @@
 "use client";
+
+import { useRef, useState, useEffect, useTransition, useId } from "react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 import useClickOutside from "@/hooks/useClickOutside";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { ArrowLeftIcon } from "lucide-react";
-import { useRef, useState, useEffect, useId } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { AddBraveFormProps } from "@/lib/interface";
+import { addBrave } from "@/app/actions/addBraveAction";
 
 const TRANSITION = {
   type: "spring",
@@ -12,62 +14,38 @@ const TRANSITION = {
   duration: 0.3,
 };
 
-export default function AddBraveForm({ onSuccess }: AddBraveFormProps) {
+export default function AddBraveForm() {
   const uniqueId = useId();
+  const formRef = useRef<HTMLFormElement>(null);
   const formContainerRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [brave, setBrave] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const { toast } = useToast();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
-  const userId = 2;
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    if (brave.trim() === "") {
-      setError("Brave field is required.");
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/social/post/create/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ brave, user_id: userId }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to add record.");
+  async function handleSubmit(formData: FormData) {
+    startTransition(async () => {
+      const result = await addBrave(formData);
+      if (result.success) {
+        toast({
+          title: "Your Brave has been added!",
+          description: `Date: ${new Date().toLocaleDateString()}`,
+        });
+        formRef.current?.reset();
+        setBrave("");
+        setIsOpen(false);
+      } else {
+        setError(result.error || "Failed to add record. Please try again.");
+        toast({
+          title: "Error",
+          description: result.error || "Failed to add record",
+          variant: "destructive",
+        });
       }
-
-      const result = await response.json();
-      setError(null);
-      toast({
-        title: "Your Brave has been added!",
-        description: `Date: ${getFormattedDate()}`,
-      });
-      setSuccess("Record added successfully!");
-      setBrave("");
-      closeMenu();
-
-      if (onSuccess) {
-        onSuccess(); // Trigger refetch of data
-      }
-    } catch (error: any) {
-      setError(error.message);
-      console.error("Error adding record:", error);
-    }
-  };
-
-  const getFormattedDate = () => {
-    const today = new Date();
-    return today.toLocaleDateString();
-  };
+    });
+  }
 
   const openMenu = () => {
     setIsOpen(true);
@@ -76,7 +54,7 @@ export default function AddBraveForm({ onSuccess }: AddBraveFormProps) {
   const closeMenu = () => {
     setIsOpen(false);
     setError(null);
-    setSuccess(null);
+    setBrave("");
   };
 
   useClickOutside(formContainerRef, () => {
@@ -104,8 +82,8 @@ export default function AddBraveForm({ onSuccess }: AddBraveFormProps) {
           key="button"
           layoutId={`popover-${uniqueId}`}
           className="btn focus-outline inline-flex cursor-pointer select-none flex-row
-        items-center border no-underline shadow-none transition
-        duration-200 ease-in-out typo-callout justify-center font-bold iconOnly h-10 w-12 p-0 rounded-xl btn-tertiaryFloat z-1 justify-self-center border-border-subtlest-tertiary"
+          items-center border no-underline shadow-none transition
+          duration-200 ease-in-out typo-callout justify-center font-bold iconOnly h-10 w-12 p-0 rounded-xl btn-tertiaryFloat z-1 justify-self-center border-border-subtlest-tertiary"
           style={{
             borderRadius: 8,
           }}
@@ -141,7 +119,11 @@ export default function AddBraveForm({ onSuccess }: AddBraveFormProps) {
                 borderRadius: 12,
               }}
             >
-              <form className="flex h-full flex-col" onSubmit={handleSubmit}>
+              <form
+                ref={formRef}
+                action={handleSubmit}
+                className="flex h-full flex-col"
+              >
                 <motion.span
                   layoutId={`popover-label-${uniqueId}`}
                   aria-hidden="true"
@@ -153,6 +135,7 @@ export default function AddBraveForm({ onSuccess }: AddBraveFormProps) {
                   What&apos;s on your mind?
                 </motion.span>
                 <textarea
+                  name="brave"
                   className="h-full w-full resize-none rounded-md bg-transparent px-4 py-3 text-sm outline-none"
                   value={brave}
                   onChange={(e) => setBrave(e.target.value)}
@@ -174,8 +157,9 @@ export default function AddBraveForm({ onSuccess }: AddBraveFormProps) {
                     className="relative ml-1 flex h-8 shrink-0 scale-100 select-none appearance-none items-center justify-center rounded-lg border border-zinc-950/10 bg-transparent px-2 text-sm text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-800 focus-visible:ring-2 active:scale-[0.98] dark:border-zinc-50/10 dark:text-zinc-50 dark:hover:bg-zinc-800"
                     type="submit"
                     aria-label="Submit form"
+                    disabled={isPending}
                   >
-                    Submit Brave
+                    {isPending ? "Submitting..." : "Submit Brave"}
                   </button>
                 </div>
                 {error && <p className="text-red-500 px-4 text-xs">{error}</p>}

@@ -1,38 +1,56 @@
-"use client";
-
+import { Suspense } from "react";
 import BraveCard from "@/components/component/brave-card";
 import Navbar from "@/components/component/navbar";
 import { BraveCardInterface } from "@/lib/interface";
-import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
-export default function Home() {
-  const [data, setData] = useState<BraveCardInterface[]>([]);
-  const [error, setError] = useState<string | null>(null);
+async function getData(): Promise<BraveCardInterface[]> {
+  const { data, error } = await supabase
+    .from("braves")
+    .select(
+      `
+      id,
+      brave,
+      users (
+        name,
+        handle
+      )
+    `
+    )
+    .order("id", { ascending: false });
 
-  const fetchData = () => {
-    fetch("/api/social/users/")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setData(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        setError("Failed to fetch data");
-      });
-  };
+  if (error) {
+    console.error("Error fetching data:", error);
+    throw new Error("Failed to fetch data");
+  }
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  return data.map((item: any) => ({
+    id: item.id,
+    brave: item.brave,
+    name: item.users?.name || "Unknown",
+    handle: item.users?.handle || "Unknown",
+  }));
+}
 
+function BraveList({ data }: { data: BraveCardInterface[] }) {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between pt-0 sm:pt-[55px]">
-      <Navbar refetch={fetchData} />
-      {error && <p className="text-red-500">{error}</p>}
+    <>
       {data.map((item) => (
         <BraveCard key={item.id.toString()} user={item} />
       ))}
+    </>
+  );
+}
+
+export default async function Home() {
+  const data = await getData();
+
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-between pt-0 sm:pt-[55px]">
+      <Navbar />
+      <Suspense fallback={<p>Loading...</p>}>
+        <BraveList data={data} />
+      </Suspense>
     </main>
   );
 }
