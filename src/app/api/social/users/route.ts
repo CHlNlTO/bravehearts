@@ -30,5 +30,7 @@ export async function GET() {
 
   console.log(formattedData);
 
-  return NextResponse.json(formattedData);
+  const response = NextResponse.json(formattedData);
+  response.headers.set("Cache-Control", "no-store, max-age=0");
+  return response;
 }
