@@ -3,8 +3,6 @@ export interface BraveCardInterface {
   name: string;
   handle: string;
   brave: string;
-}
-
-export interface AddBraveFormProps {
-  onSuccess: () => void; // New prop to trigger data refetch
+  likeCount: number;
+  isLiked: boolean;
 }

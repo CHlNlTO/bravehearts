@@ -19,6 +19,7 @@
     "clsx": "^2.1.1",
     "express": "^4.19.2",
     "framer-motion": "^11.3.30",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.435.0",
     "next": "14.2.6",
     "react": "^18",
@@ -28,6 +29,7 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

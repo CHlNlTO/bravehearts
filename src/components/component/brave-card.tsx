@@ -3,10 +3,12 @@
  * @see https://v0.dev/t/Jd3OFwX
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
+"use client";
 
 import Image from "next/image";
 import Person1 from "@/assets/person1.png";
 import { BraveCardInterface } from "@/lib/interface";
+import LikeButton from "./like-button";
 
 export default function BraveCard({ user }: { user: BraveCardInterface }) {
   return (
@@ -24,8 +26,10 @@ export default function BraveCard({ user }: { user: BraveCardInterface }) {
             />
           </div>
           <div>
-            <div className="text-lg font-bold dark:text-white">{user.name}</div>
-            <div className="text-sm text-gray-500 dark:text-gray-200">
+            <div className="text-lg font-bold dark:text-white cursor-pointer">
+              {user.name}
+            </div>
+            <div className="text-sm text-gray-500 dark:text-gray-200 cursor-pointer">
               {user.handle}
             </div>
           </div>
@@ -38,20 +42,11 @@ export default function BraveCard({ user }: { user: BraveCardInterface }) {
       </div>
       <div className="flex justify-between items-center space-x-4 pt-4 border-gray-200 dark:border-gray-700 px-6 py-4">
         <div className="flex items-center space-x-4">
-          <svg
-            className=" h-4 w-4 text-gray-500 dark:text-gray-200 cursor-pointer"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-          </svg>
+          <LikeButton
+            braveId={user.id}
+            initialLikeCount={user.likeCount || 0}
+            initialLikedState={user.isLiked || false}
+          />
           <svg
             className=" h-4 w-4 text-gray-500 dark:text-gray-200 cursor-pointer"
             fill="none"
