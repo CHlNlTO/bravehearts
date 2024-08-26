@@ -42,11 +42,7 @@ export default function BraveCard({ user }: { user: BraveCardInterface }) {
       </div>
       <div className="flex justify-between items-center space-x-4 pt-4 border-gray-200 dark:border-gray-700 px-6 py-4">
         <div className="flex items-center space-x-4">
-          <LikeButton
-            braveId={user.id}
-            initialLikeCount={user.likeCount || 0}
-            initialLikedState={user.isLiked || false}
-          />
+          <LikeButton braveId={user.id} />
           <svg
             className=" h-4 w-4 text-gray-500 dark:text-gray-200 cursor-pointer"
             fill="none"

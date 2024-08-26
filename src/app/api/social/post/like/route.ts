@@ -6,21 +6,51 @@ export async function POST(request: NextRequest) {
     const { braveId, liked } = await request.json();
     const userId = 2; // Hardcoded user ID for now
 
-    let { error } = await supabase
+    // Check if the record already exists
+    const { data: existingLike, error: checkError } = await supabase
       .from("like_counts")
-      .upsert({ brave_id: braveId, user_id: userId });
+      .select("*")
+      .match({ brave_id: braveId, user_id: userId })
+      .single();
 
-    if (error) throw error;
+    if (checkError && checkError.code !== "PGRST116") throw checkError; // Throw error if it's not a "not found" error
+
+    if (liked) {
+      // Add like if it doesn't exist
+      if (!existingLike) {
+        const { error } = await supabase
+          .from("like_counts")
+          .insert({ brave_id: braveId, user_id: userId });
+
+        if (error) throw error;
+      }
+    } else {
+      // Remove like if it exists
+      if (existingLike) {
+        const { error } = await supabase
+          .from("like_counts")
+          .delete()
+          .match({ brave_id: braveId, user_id: userId });
+
+        if (error) throw error;
+      }
+    }
 
     // Get updated like count
     const { count, error: countError } = await supabase
       .from("like_counts")
-      .select("*", { count: "exact", head: true })
+      .select("*", { count: "exact" })
       .eq("brave_id", braveId);
 
     if (countError) throw countError;
 
-    return NextResponse.json({ likeCount: count }, { status: 200 });
+    // The isLiked status is based on the action we just performed
+    const isLiked = liked;
+
+    return NextResponse.json(
+      { likeCount: count, isLiked: isLiked },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error updating like:", error);
     return NextResponse.json(

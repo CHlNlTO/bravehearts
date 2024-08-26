@@ -3,17 +3,11 @@ import { debounce } from "lodash";
 
 interface LikeButtonProps {
   braveId: bigint;
-  initialLikeCount: number;
-  initialLikedState: boolean;
 }
 
-const LikeButton: React.FC<LikeButtonProps> = ({
-  braveId,
-  initialLikeCount,
-  initialLikedState,
-}) => {
-  const [likeCount, setLikeCount] = useState(initialLikeCount);
-  const [liked, setLiked] = useState(initialLikedState);
+const LikeButton: React.FC<LikeButtonProps> = ({ braveId }) => {
+  const [likeCount, setLikeCount] = useState(0);
+  const [liked, setLiked] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const fetchLikeCount = useCallback(async () => {
@@ -23,11 +17,11 @@ const LikeButton: React.FC<LikeButtonProps> = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ braveId }),
       });
-      if (!response.ok) throw new Error("Failed to fetch like count");
+      if (!response.ok) throw new Error("Failed to fetch like status");
       const data = await response.json();
       setLikeCount(data.likeCount);
     } catch (error) {
-      console.error("Error fetching like count:", error);
+      console.error("Error fetching like status:", error);
     }
   }, [braveId]);
 
@@ -39,7 +33,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({
     debounce(async (braveId: bigint, liked: boolean) => {
       setIsUpdating(true);
       try {
-        const response = await fetch("/api/social/post/like/", {
+        const response = await fetch("/api/social/post/like", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ braveId, liked }),
@@ -47,6 +41,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({
         if (!response.ok) throw new Error("Failed to update like status");
         const data = await response.json();
         setLikeCount(data.likeCount);
+        setLiked(data.isLiked);
       } catch (error) {
         console.error("Error updating like:", error);
         setLiked(!liked);

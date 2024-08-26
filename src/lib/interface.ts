@@ -3,6 +3,4 @@ export interface BraveCardInterface {
   name: string;
   handle: string;
   brave: string;
-  likeCount: number;
-  isLiked: boolean;
 }
