@@ -8,7 +8,7 @@ export async function addBrave(formData: FormData) {
 
   // Determine the base URL
   const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
-    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+    ? `https://bravehearts.vercel.app`
     : process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
   try {
