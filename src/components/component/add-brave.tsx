@@ -4,6 +4,7 @@ import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { ArrowLeftIcon } from "lucide-react";
 import { useRef, useState, useEffect, useId } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { AddBraveFormProps } from "@/lib/interface";
 
 const TRANSITION = {
   type: "spring",
@@ -11,7 +12,7 @@ const TRANSITION = {
   duration: 0.3,
 };
 
-export default function AddBraveForm() {
+export default function AddBraveForm({ onSuccess }: AddBraveFormProps) {
   const uniqueId = useId();
   const formContainerRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +21,6 @@ export default function AddBraveForm() {
   const [success, setSuccess] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Hardcoded userId
   const userId = 2;
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -54,6 +54,10 @@ export default function AddBraveForm() {
       setSuccess("Record added successfully!");
       setBrave("");
       closeMenu();
+
+      if (onSuccess) {
+        onSuccess(); // Trigger refetch of data
+      }
     } catch (error: any) {
       setError(error.message);
       console.error("Error adding record:", error);
@@ -62,7 +66,7 @@ export default function AddBraveForm() {
 
   const getFormattedDate = () => {
     const today = new Date();
-    return today.toLocaleDateString(); // Formats as 'MM/DD/YYYY' by default, can be customized
+    return today.toLocaleDateString();
   };
 
   const openMenu = () => {

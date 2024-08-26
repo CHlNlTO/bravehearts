@@ -1,8 +1,10 @@
 import AddBraveForm from "./add-brave";
 
-export default function Navbar() {
-  const handleAddBrave = () => {};
+interface NavbarProps {
+  refetch: () => void;
+}
 
+export default function Navbar({ refetch }: NavbarProps) {
   return (
     <div className="fixed !bottom-0 sm:!top-0 left-0 h-[75px] sm:h-[61px] w-full bg-transparent backdrop-blur-md px-2 sm:px-0 py-2 sm:py-0">
       <nav className="grid w-full auto-cols-fr grid-flow-col items-center justify-between rounded-2xl sm:rounded-none bg-blur-baseline backdrop-blur-[2.5rem] shadow-[0_4px_30px_rgba(0,0,0.1)] sm:shadow-none border-t sm:border-b border-border-subtlest-tertiary">
@@ -45,7 +47,7 @@ export default function Navbar() {
             <span className="text-[10px]">Explore</span>
           </a>
         </div>
-        <AddBraveForm />
+        <AddBraveForm onSuccess={refetch} />
         <div className="relative flex h-full flex-col items-center justify-center py-2">
           <a
             className="flex flex-col items-center justify-center text-text-tertiary"
