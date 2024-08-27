@@ -3,15 +3,8 @@ import BraveCard from "@/components/component/brave-card";
 import Navbar from "@/components/component/navbar";
 import { BraveCardInterface } from "@/lib/interface";
 import { supabase } from "@/lib/supabase";
-import { auth } from "@clerk/nextjs/server";
 
 async function getData(): Promise<BraveCardInterface[]> {
-  const { userId } = auth();
-
-  if (!userId) {
-    return [];
-  }
-
   const { data, error } = await supabase
     .from("braves")
     .select(

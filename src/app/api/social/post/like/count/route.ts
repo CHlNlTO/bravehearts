@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       .match({ brave_id: braveId, user_id: userId })
       .single();
 
-    if (likeError && likeError.code !== "PGRST116") throw likeError; // Ignore "not found" errors
+    if (likeError && likeError.code !== "PGRST116") throw likeError;
 
     return NextResponse.json(
       { likeCount: count, isLiked: !!likeData },

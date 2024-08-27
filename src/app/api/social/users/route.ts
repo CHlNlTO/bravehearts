@@ -28,7 +28,7 @@ export async function GET() {
     handle: item.users?.handle || "Unknown",
   }));
 
-  console.log(formattedData);
+  console.log("Formatted Data: ", formattedData);
 
   const response = NextResponse.json(formattedData);
   response.headers.set("Cache-Control", "no-store, max-age=0");
