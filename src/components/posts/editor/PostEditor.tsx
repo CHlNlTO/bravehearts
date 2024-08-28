@@ -43,7 +43,7 @@ export default function PostEditor() {
         italic: false,
       }),
       Placeholder.configure({
-        placeholder: "What's crack-a-lackin'?",
+        placeholder: "What's up, braveheart?",
       }),
     ],
   });
@@ -76,7 +76,7 @@ export default function PostEditor() {
   }
 
   return (
-    <div className="flex flex-col gap-5 rounded-2xl bg-card p-5 shadow-sm">
+    <div className="flex flex-col gap-5 rounded-2xl border bg-card p-5 shadow-sm">
       <div className="flex gap-5">
         <UserAvatar avatarUrl={user.avatarUrl} className="hidden sm:inline" />
         <div {...rootProps} className="w-full">
@@ -112,7 +112,7 @@ export default function PostEditor() {
           onClick={onSubmit}
           loading={mutation.isPending}
           disabled={!input.trim() || isUploading}
-          className="min-w-20"
+          className="min-w-20 border"
         >
           Post
         </LoadingButton>
@@ -137,7 +137,7 @@ function AddAttachmentsButton({
       <Button
         variant="ghost"
         size="icon"
-        className="text-primary hover:text-primary"
+        className="border text-primary hover:text-primary"
         disabled={disabled}
         onClick={() => fileInputRef.current?.click()}
       >
@@ -148,7 +148,7 @@ function AddAttachmentsButton({
         accept="image/*, video/*"
         multiple
         ref={fileInputRef}
-        className="sr-only hidden"
+        className="sr-only hidden border"
         onChange={(e) => {
           const files = Array.from(e.target.files || []);
           if (files.length) {
@@ -201,7 +201,10 @@ function AttachmentPreview({
 
   return (
     <div
-      className={cn("relative mx-auto size-fit", isUploading && "opacity-50")}
+      className={cn(
+        "relative mx-auto size-fit border",
+        isUploading && "opacity-50",
+      )}
     >
       {file.type.startsWith("image") ? (
         <Image
