@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase";
 export async function POST(request: NextRequest) {
   try {
     const { braveId } = await request.json();
-    const userId = 2; // Hardcoded user ID for now
+    const userId = "a9da0516-5b9e-46d9-bbae-24f3f240199c"; // Hardcoded user ID for now
 
     // Get like count
     const { count, error: countError } = await supabase

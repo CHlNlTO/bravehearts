@@ -136,7 +136,7 @@ export default function AddBraveForm() {
                 </motion.span>
                 <textarea
                   name="brave"
-                  className="h-full w-full resize-none rounded-md bg-transparent px-4 py-3 text-sm outline-none"
+                  className="h-full w-full resize-none rounded-md bg-transparent px-4 py-3 text-sm outline-none z-50"
                   value={brave}
                   onChange={(e) => setBrave(e.target.value)}
                   autoFocus

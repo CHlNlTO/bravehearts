@@ -1,10 +1,18 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function addBrave(formData: FormData) {
   const brave = formData.get("brave") as string;
-  const userId = 2; // You might want to get this dynamically
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user?.id) {
+    return { success: false, error: "User not authenticated" };
+  }
+
+  const userId = session.user.id;
 
   // Determine the base URL
   const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
