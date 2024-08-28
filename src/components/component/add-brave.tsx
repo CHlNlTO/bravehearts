@@ -30,7 +30,7 @@ export default function AddBraveForm() {
       const result = await addBrave(formData);
       if (result.success) {
         toast({
-          title: "Your Brave has been added!",
+          title: "Your Brave has been added.",
           description: `Date: ${new Date().toLocaleDateString()}`,
         });
         formRef.current?.reset();
